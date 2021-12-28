@@ -179,11 +179,15 @@ char normalise(char operator)
 		case 'x':
 		case '*':
 			return '*';
-		case '\'':
-		case '^':
-			return '^';
-		default:
-			return operator;
+            	case '\'':
+            	case '^':
+            	        return '^';
+            	case '+':
+            	case '-':
+            	case '/':
+               	 return operator;
+            	default:
+                	exit(-1);
 	}
 }
 
@@ -288,6 +292,8 @@ int main(int argc, char *argv[])
 
 	/* Tokenise */
 	str = input.str;
+	if(!str) exit(-1);
+
 	while (*str != '\0') {
 		strStart = str;
 		if (isspace(*str)) {
@@ -297,6 +303,7 @@ int main(int argc, char *argv[])
 			addScope(currentScope, &currentScope);
 			str++;
 		} else if (*str == ')') {
+			if (!currentScope->first || !strcmp (currentScope->first->type, OP) || currentScope->parent == NULL) exit(-1);
 			insertToken(currentScope, NUM, '\0', evaluateScope(currentScope, &currentScope));
 			str++;
 		} else if ((number = strtold(str, &str)) == 0.0L && (number = strtoconst(str, &str)) == 0.0L) {
